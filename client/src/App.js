@@ -26,7 +26,7 @@ function App() {
             
               <Route exact path="/" component={LandingPage}/>
               <Route exact path="/choose-quiz" component={ChooseQuiz}/>
-              <Route exact path="/play-quiz/:quiz_id" component={QuizPage}/>
+              {/*<Route exact path="/play-quiz/:quiz_id" component={QuizPage}/>*/}
               <Route component={NotFoundPage} />
             
           </Switch>

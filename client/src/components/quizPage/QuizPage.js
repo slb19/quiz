@@ -1,14 +1,14 @@
 import React, {useContext, useState, useEffect} from 'react'
-import {Link} from "react-router-dom"
-import {useParams} from "react-router";
+//import {Link} from "react-router-dom"
+//import {useParams} from "react-router";
 import QuizContext from "../../context/quiz/QuizContext.js"
 
-const QuizPage = () => {
+const QuizPage = ({quiz_id, backToQuizes}) => {
 
     const quizContext = useContext(QuizContext)
     const { allQuiz } = quizContext
  
-    let { quiz_id } = useParams()
+    //let { quiz_id } = useParams()
   
     const[quizIndex, setQuizIndex] = useState(quiz_id - 1)
     const[innerIndex, setInnerIndex] = useState(0)
@@ -126,7 +126,8 @@ const QuizPage = () => {
                     {isQuizFinished && <div>
                                             <p>Quiz has finished</p>
                                             <p>Your score is {score}%</p>
-                                                <Link to="/choose-quiz" style={{color:'blue', marginLeft:"500px", textDecoration:"underline"}}>Go to quizes</Link>
+                                                {/*<Link to="/choose-quiz" style={{color:'blue', marginLeft:"500px", textDecoration:"underline"}}>Go to quizes</Link> */}
+                                                <button onClick={backToQuizes} className="waves-effect waves-light btn-small">Go to Quizes</button>
                                         </div>}
         </div>
     )
