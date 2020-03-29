@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react'
+import React from 'react'
 import {Link} from "react-router-dom"
 //import QuizContext from "../context/quiz/QuizContext.js"
 

@@ -9,8 +9,9 @@ const QuizPage = ({quiz_id, backToQuizes}) => {
     const { allQuiz } = quizContext
  
     //let { quiz_id } = useParams()
-  
-    const[quizIndex, setQuizIndex] = useState(quiz_id - 1)
+
+  // eslint-disable-next-line
+    const[quizIndex, setQuixIndex] = useState(quiz_id - 1)
     const[innerIndex, setInnerIndex] = useState(0)
     const[isQuizFinished, setIsQuizFinished] = useState(false)
     const[score, setScore] = useState(0)
@@ -30,6 +31,7 @@ const QuizPage = ({quiz_id, backToQuizes}) => {
        if(allQuiz[quizIndex].question.length === innerIndex +1){
            setIsQuizFinished(true)
        }
+       // eslint-disable-next-line
     },[quiz.submittedAnswer])
 
     useEffect(()=>{
@@ -40,6 +42,7 @@ const QuizPage = ({quiz_id, backToQuizes}) => {
             submittedAnswer:null,
             isCorrect:null,
         })
+        // eslint-disable-next-line
     },[quizIndex, innerIndex])
 
     useEffect(()=>{
@@ -47,7 +50,8 @@ const QuizPage = ({quiz_id, backToQuizes}) => {
         let scorePercent = score / allQuiz[quizIndex].question.length
         console.log(scorePercent)
         setScore(scorePercent * 100)
-       
+        
+       // eslint-disable-next-line
     },[quiz.submittedAnswer])
 
     const makeAllCheckboxesFalse =()=>{

@@ -1,24 +1,23 @@
 const express = require("express")
 const mongoose = require("mongoose")
+const bcrypt = require("bcrypt")
+const jwt = require('jsonwebtoken');
 const cors = require('cors')
+require('dotenv').config()
 const Schema = mongoose.Schema;
 const autoIncrement = require('mongoose-auto-increment');
 
 const app = express()
 app.use(cors())
 
-/*
-mongoose.connect("mongodb://127.0.0.1:27017/quiz", {useNewUrlParser: true ,
-                                                            useCreateIndex:true ,
-                                                            useFindAndModify:false,
-                                                            useUnifiedTopology: true}).catch(error=>console.log(error));
-*/
 const connection = mongoose.createConnection("mongodb://127.0.0.1:27017/quiz",{
                                                                                 useNewUrlParser: true ,
                                                                                 useCreateIndex:true ,
                                                                                 useFindAndModify:false,
                                                                                 useUnifiedTopology: true
                                                                                     }) 
+
+/* QUIZ MODEL*/
 autoIncrement.initialize(connection); 
 
 const quizSchema = new Schema({
@@ -50,24 +49,50 @@ quizSchema.plugin(autoIncrement.plugin, {
    });
 
 const Quiz = connection.model("quiz", quizSchema)
+/* QUIZ MODEL*/
+
+/* ADMINUSERS MODEL*/
+const adminUserSchema = new Schema({
+
+    username:{
+        type:String,
+        required:true,
+        trim:true,
+        unique:true
+    },
+    password:{
+        type:String,
+        required:true,
+        trim:true
+    },    
+})
+
+const adminUser = connection.model("adminusers", adminUserSchema)
+/* ADMINUSERS MODEL*/
 
 app.use(express.json());
 
-// INSERT QUIZ TO DATABASE
-app.post("/enterQuiz", async (req,res)=>{
-    try{
-       // console.log(req.body)
-        
-        const newQuiz = new Quiz(req.body)
-        await newQuiz.save()
-        res.status(201).json({msg:"Quiz has been added to the database"})
-        
+const auth = async(req, res, next)=>{
+    const token=req.header("x-auth-token");
+    //console.log(token)
+        if(!token){
+            return res.status(401).json({msg:"Access denied"})
+        }
+        try{
+            const decoded=jwt.verify(token, process.env.JWT_SECRET)
+                const isAuthenticated=decoded.isAdmin;
+                    if(!isAuthenticated){
+                        return res.status(401).json({msg:"Access denied"})
+                    }
+               
+                next();
         }catch(error){
             console.log(error)
-            res.status(500).json({error:"Server Error"})
-    }   
-})
+            res.status(500).json({msg:"Server Error"})
+        } 
+}
 
+//GET ALL QUIZES FROMDATABASE
 app.get("/getAllQuiz", async(req, res)=>{
     try{
         const allQuiz = await Quiz.find({},"-answer")
@@ -82,6 +107,7 @@ app.get("/getAllQuiz", async(req, res)=>{
     }   
 })
 
+//GET CORRECT ANSWER BY QUIZ
 app.get("/getCorrectAnswer/:quiz_id", async(req, res)=>{
     const quiz_id = req.params.quiz_id
     const {submittedAnswer, innerIndex} = req.query
@@ -102,15 +128,86 @@ app.get("/getCorrectAnswer/:quiz_id", async(req, res)=>{
     }      
 })
 
+//INSERT ADMIN USER TO DATABASE
+app.post("/admin-signUp", async(req, res)=>{
+    try{
+        const {username, password}=req.body;
+        const salt= await bcrypt.genSalt(10); 
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+            const credentials = await new adminUser({username, password:hashedPassword})
+           
+            await credentials.save()
+
+            res.status(201).json(credentials)
+
+    }catch(error){
+        console.log(error)
+        res.status(500).json({error:"Server Error"})
+    }
+})
+
+//LOGIN ADMIN USER
+app.post("/admin-login", async(req, res)=>{
+    console.log("hittt")
+    try{
+        const {username,password}=req.body
+      
+        const foundUsername = await adminUser.findOne({username})
+      
+            if(!foundUsername){
+                return res.status(401).json({msg:"Invalid Credentials"})
+            }
+
+            const passwordIsMatch= await bcrypt.compare(password, foundUsername.password)
+
+            if(!passwordIsMatch){
+                return res.status(401).json({msg:"Invalid Credentials"})
+            }
+            const payload={
+                id:foundUsername._id,
+                isAdmin:true
+            }
+
+            jwt.sign(payload, process.env.JWT_SECRET,{expiresIn:"10h"},(error, token)=>{
+                if(error){
+                    throw new Error;
+                }
+               
+                res.status(200).json({token})
+            })
+        
+    }catch(error){
+        console.log(error)
+        res.status(500).json({error:"Server Error"})
+    }
+})
+
+// INSERT QUIZ TO DATABASE
+app.post("/enterQuiz", auth, async (req,res)=>{
+    try{
+       // console.log(req.body)
+        
+        const newQuiz = new Quiz(req.body)
+        await newQuiz.save()
+        res.status(201).json({msg:"Quiz has been added to the database"})
+        
+        }catch(error){
+            console.log(error)
+            res.status(500).json({error:"Server Error"})
+    }   
+})
+
 // UPDATE QUIZ
-app.put("/updateQuiz/:id", async(req,res)=>{
+app.put("/updateQuiz/:id", auth , async(req,res)=>{
     try{
        const quiz_id = req.params.id
       
-       const{question, multipleChoise, answer} = req.body
+       const{quizTittle, question, multipleChoise, answer} = req.body
     
        const quiz = await Quiz.findOne({quiz_id})
-
+       
+       quiz.quizTittle.push(quizTittle)
        quiz.question.push(question)
        quiz.multipleChoise.push(multipleChoise)
        quiz.answer.push(answer)

@@ -1,4 +1,4 @@
-import React,  {useEffect, useContext, useState}  from 'react'
+import React,  {useContext, useState}  from 'react'
 //import {Link} from "react-router-dom"
 import QuizPage from "./quizPage/QuizPage.js"
 import QuizContext from "../context/quiz/QuizContext.js"
