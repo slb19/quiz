@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import AdminQuizes from "./AdminQuizes.js"
 
 const AdminDashboard = () => {
@@ -22,6 +22,15 @@ const AdminDashboard = () => {
        addedToDb:false,
         msg:""
     })
+
+    useEffect(()=>{
+        setTimeout(()=>{
+            setAddToDb({
+                addedToDb:false,
+                msg:""
+            })
+        },25000)      
+    }, [addToDb])
 
  
     const showQuiz = ()=>{
@@ -122,7 +131,8 @@ const AdminDashboard = () => {
             body: JSON.stringify(fullQuiz),
             headers:{
                 Accept:"Application/json",
-                "Content-Type":"Application/json"
+                "Content-Type":"Application/json",
+                "x-auth-token":localStorage.getItem("token")
             } 
         }).then(res=>{
             return res.json()

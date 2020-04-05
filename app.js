@@ -92,7 +92,7 @@ const auth = async(req, res, next)=>{
         } 
 }
 
-//GET ALL QUIZES FROMDATABASE
+//GET ALL QUIZES FROMDATABASE 
 app.get("/getAllQuiz", async(req, res)=>{
     try{
         const allQuiz = await Quiz.find({},"-answer")
@@ -126,6 +126,24 @@ app.get("/getCorrectAnswer/:quiz_id", async(req, res)=>{
             console.log(error)
             res.status(500).json({error:"Server Error"})
     }      
+})
+
+
+//ADMIN DASHBOARD
+//GET ALL QUIZES FROM DATABASE ADMIN DASHBOARD
+
+app.get("/getAllQuiz/admin", async(req, res)=>{
+    try{
+        const allQuiz = await Quiz.find({})
+            if(!allQuiz){
+                return res.status(404).json({msg:"There are 0 quiz at the momment"})
+            }
+        return res.status(200).json(allQuiz)
+        
+        }catch(error){
+            console.log(error)
+            res.status(500).json({error:"Server Error"})
+    }   
 })
 
 //INSERT ADMIN USER TO DATABASE
@@ -184,13 +202,18 @@ app.post("/admin-login", async(req, res)=>{
 })
 
 // INSERT QUIZ TO DATABASE
-app.post("/enterQuiz", async (req,res)=>{
+app.post("/enterQuiz", auth , async (req,res)=>{
     try{
         console.log(req.body)
         const {quizTittle , finalQuestion, finalMultipleChoise, finalAnswer} = req.body
 
             if(quizTittle ==="" || finalQuestion.length === 0 || finalMultipleChoise.length=== 0 || finalAnswer.length ===0){
                 return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
+            }
+            for(let i =0 ; i <finalMultipleChoise.length ; i++){
+                if(finalMultipleChoise[i].choises.length < 2){
+                    return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
+                }
             }
             // if(finalQuestion.length !==finalMultipleChoise.length !==finalAnswer.length){
             //     return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
@@ -199,21 +222,24 @@ app.post("/enterQuiz", async (req,res)=>{
             const areEqual=()=>{
                 var len = arguments.length;
                 for (let i = 1; i< len; i++){
-                    console.log(arguments[i].length, arguments[i-1].length)
-                   if ( arguments[i].length !== arguments[i-1].length)
+                    console.log(arguments[i], arguments[i-1])
+                   if ( arguments[i] !== arguments[i-1])
                       return false;
                 }
                 return true;
             }
 
-            if(!areEqual(finalQuestion.length, finalMultipleChoise.length, finalAnswer.length )){
+            const equal= areEqual(finalQuestion.length, finalMultipleChoise.length, finalAnswer.length)
+
+            if(equal === false){
                 console.log(finalQuestion.length, finalMultipleChoise.length, finalAnswer.length)
                 return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
             }
 */
-            if((finalQuestion.length !== finalMultipleChoise.length) && (finalMultipleChoise.length !==finalAnswer.length)){
+            if(finalQuestion.length !== finalMultipleChoise.length || finalMultipleChoise.length !==finalAnswer.length || finalAnswer.length !==finalQuestion.length ){
                 return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
             }
+
         const quiz = {}
         quiz.quizTittle = quizTittle
         quiz.question = finalQuestion
@@ -231,7 +257,7 @@ app.post("/enterQuiz", async (req,res)=>{
 })
 
 // UPDATE QUIZ
-app.put("/updateQuiz/:id", async(req,res)=>{
+app.put("/updateQuiz/:id", auth , async(req,res)=>{
     try{
        const quiz_id = req.params.id
       
