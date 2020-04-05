@@ -28,9 +28,9 @@ const ChooseQuiz = () => {
             <> 
             <h2>Choose Quiz</h2>
         
-            {allQuiz.map(quiz=>{
+            {allQuiz.map((quiz,i)=>{
                 return <div key={quiz._id}>
-                            <h5>{quiz.quizTittle}</h5>
+                            <h5>{i+1}. {quiz.quizTittle}</h5>
                             <button className="waves-effect waves-light btn-small" onClick={()=>playQuiz(quiz.quiz_id)}>Play
             {/* <Link to={{pathname:`/play-quiz/${quiz.quiz_id}`}} style={{color:'black'}} >Play</Link> */}
                             </button>

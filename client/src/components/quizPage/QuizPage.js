@@ -11,7 +11,7 @@ const QuizPage = ({quiz_id, backToQuizes}) => {
     //let { quiz_id } = useParams()
 
   // eslint-disable-next-line
-    const[quizIndex, setQuixIndex] = useState(quiz_id - 1)
+    const[quizIndex, setQuizIndex] = useState(0)
     const[innerIndex, setInnerIndex] = useState(0)
     const[isQuizFinished, setIsQuizFinished] = useState(false)
     const[score, setScore] = useState(0)
@@ -24,6 +24,14 @@ const QuizPage = ({quiz_id, backToQuizes}) => {
        // isQuizFinished:false
     })
 
+    useEffect(()=>{
+        for(let i = 0 ; i < allQuiz.length; i++){
+            if(allQuiz[i].quiz_id === quiz_id){
+                setQuizIndex(i)
+            }
+        }
+    },[])
+  
     useEffect(()=>{
         if(quiz.submittedAnswer === null) return;
         submitAnswer()

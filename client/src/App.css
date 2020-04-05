@@ -13,3 +13,11 @@
 .add-quiz-button{
     margin-top: 60px;
 }
+
+.choises-input{
+    margin-left:50px;
+}
+
+.admin-quiz-tittle:hover{
+    color:grey
+}

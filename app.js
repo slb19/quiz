@@ -184,13 +184,45 @@ app.post("/admin-login", async(req, res)=>{
 })
 
 // INSERT QUIZ TO DATABASE
-app.post("/enterQuiz", auth, async (req,res)=>{
+app.post("/enterQuiz", async (req,res)=>{
     try{
-       // console.log(req.body)
-        
-        const newQuiz = new Quiz(req.body)
-        await newQuiz.save()
-        res.status(201).json({msg:"Quiz has been added to the database"})
+        console.log(req.body)
+        const {quizTittle , finalQuestion, finalMultipleChoise, finalAnswer} = req.body
+
+            if(quizTittle ==="" || finalQuestion.length === 0 || finalMultipleChoise.length=== 0 || finalAnswer.length ===0){
+                return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
+            }
+            // if(finalQuestion.length !==finalMultipleChoise.length !==finalAnswer.length){
+            //     return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
+            // }
+/*
+            const areEqual=()=>{
+                var len = arguments.length;
+                for (let i = 1; i< len; i++){
+                    console.log(arguments[i].length, arguments[i-1].length)
+                   if ( arguments[i].length !== arguments[i-1].length)
+                      return false;
+                }
+                return true;
+            }
+
+            if(!areEqual(finalQuestion.length, finalMultipleChoise.length, finalAnswer.length )){
+                console.log(finalQuestion.length, finalMultipleChoise.length, finalAnswer.length)
+                return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
+            }
+*/
+            if((finalQuestion.length !== finalMultipleChoise.length) && (finalMultipleChoise.length !==finalAnswer.length)){
+                return res.status(400).json({msg:"Quiz data were not ok! Please submit all forms "})
+            }
+        const quiz = {}
+        quiz.quizTittle = quizTittle
+        quiz.question = finalQuestion
+        quiz.multipleChoise= finalMultipleChoise
+        quiz.answer = finalAnswer
+
+        const newQuiz = new Quiz(quiz)
+        const submittedQuiz = await newQuiz.save()
+        res.status(201).json({msg:"Quiz has been added to the database", quiz:submittedQuiz})
         
         }catch(error){
             console.log(error)
@@ -199,7 +231,7 @@ app.post("/enterQuiz", auth, async (req,res)=>{
 })
 
 // UPDATE QUIZ
-app.put("/updateQuiz/:id", auth , async(req,res)=>{
+app.put("/updateQuiz/:id", async(req,res)=>{
     try{
        const quiz_id = req.params.id
       
