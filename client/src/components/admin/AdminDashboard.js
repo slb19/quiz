@@ -3,6 +3,7 @@ import AdminQuizes from "./AdminQuizes.js"
 
 const AdminDashboard = () => {
 
+    const[allQuizAdmin, setAllQuizAdmin] = useState([])
     const[addQuiz, setAddQuiz]= useState(false)
     const[next, setNext] = useState(false)
 
@@ -29,8 +30,8 @@ const AdminDashboard = () => {
                 addedToDb:false,
                 msg:""
             })
-        },25000)      
-    }, [addToDb])
+        },5000)      
+    }, [addToDb.addedToDb])
 
  
     const showQuiz = ()=>{
@@ -119,6 +120,24 @@ const AdminDashboard = () => {
         setAnswer("")
     }
 
+    const getAllQuizAdmin = () =>{
+        fetch("http://localhost:5000/getAllQuiz/admin",{
+            method:"GET",
+            headers:{
+                Accept:"Application/json",
+                "Content-Type":"Application/json",
+                "x-auth-token":localStorage.getItem("token")
+            }
+        }).then(res=>{
+            return res.json()
+        }).then(data=>{
+            setAllQuizAdmin([...data])
+    
+        }).catch(error=>{
+            console.log(error)
+        })
+    }
+
     const submitQuizHandler = (e) =>{
 
         e.preventDefault()
@@ -148,6 +167,7 @@ const AdminDashboard = () => {
                 finalMultipleChoise:[],
                 finalAnswer:[]  
             })
+            getAllQuizAdmin()
         }).catch(error=>{
             console.log(error)
         })
@@ -214,7 +234,7 @@ const AdminDashboard = () => {
                     }
              </div>
              <div className="col s12 m6">
-                 <AdminQuizes/>
+                 <AdminQuizes getAllQuizAdmin={getAllQuizAdmin} allQuizAdmin={allQuizAdmin}/>
              </div>
       </div>
     )

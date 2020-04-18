@@ -146,6 +146,18 @@ app.get("/getAllQuiz/admin", async(req, res)=>{
     }   
 })
 
+//GET QUIZ BY ID 
+app.get("/getQuiz/admin/:id", async (req, res)=>{
+    try{
+        const _id = req.params.id
+        const quiz = await Quiz.findById(_id)
+            return res.status(200).json(quiz)
+    }catch(error){
+        console.log(error)
+        res.status(500).json({error:"Server Error"})
+    }
+})
+
 //INSERT ADMIN USER TO DATABASE
 app.post("/admin-signUp", async(req, res)=>{
     try{
@@ -167,7 +179,7 @@ app.post("/admin-signUp", async(req, res)=>{
 
 //LOGIN ADMIN USER
 app.post("/admin-login", async(req, res)=>{
-    console.log("hittt")
+    //console.log("hittt")
     try{
         const {username,password}=req.body
       
@@ -202,7 +214,7 @@ app.post("/admin-login", async(req, res)=>{
 })
 
 // INSERT QUIZ TO DATABASE
-app.post("/enterQuiz", auth , async (req,res)=>{
+app.post("/enterQuiz", async (req,res)=>{
     try{
         console.log(req.body)
         const {quizTittle , finalQuestion, finalMultipleChoise, finalAnswer} = req.body
@@ -257,27 +269,72 @@ app.post("/enterQuiz", auth , async (req,res)=>{
 })
 
 // UPDATE QUIZ
-app.put("/updateQuiz/:id", auth , async(req,res)=>{
+app.put("/updateQuiz/:id", async(req,res)=>{
     try{
-       const quiz_id = req.params.id
+       const _id = req.params.id
       
        const{quizTittle, question, multipleChoise, answer} = req.body
+       const errorMessage = "Quiz data were not ok! Please submit all forms"
+        
+       if(quizTittle ==="" || question.length === 0 || multipleChoise.length=== 0 || answer.length ===0){
+        return res.status(400).json({msg:errorMessage})
+    }
+    for(let j= 0 ; j<question.length; j++){
+        if(question[j] ===""){
+            return res.status(400).json({msg:errorMessage}) 
+        }
+    }
+    for(let i =0 ; i <multipleChoise.length ; i++){
+        if(multipleChoise[i].choises.length < 2){
+            return res.status(400).json({msg:errorMessage})
+        }
+        for(let m =0 ; m < multipleChoise[i].choises.length ; m++){
+            if( multipleChoise[i].choises[m] ==="" ){
+                return res.status(400).json({msg:errorMessage})
+            }
+        }
+    }
+    for(let k =0 ; k < answer.length ; k++){
+        if(answer[k] === ""){
+            return res.status(400).json({msg:errorMessage})
+        }
+    }
     
-       const quiz = await Quiz.findOne({quiz_id})
+       const quiz = await Quiz.findOne({_id})
        
+       /*
        quiz.quizTittle.push(quizTittle)
        quiz.question.push(question)
        quiz.multipleChoise.push(multipleChoise)
        quiz.answer.push(answer)
-
-       const updatedQuiz = await Quiz.findOneAndUpdate(quiz_id, {question:quiz.question,
+        */
+       quiz.quizTittle = quizTittle
+       quiz.question = question
+       quiz.multipleChoise = multipleChoise
+       quiz.answer = answer
+        console.log(quiz)
+    
+       const updatedQuiz = await Quiz.findByIdAndUpdate(_id, {  quizTittle: quiz.quizTittle,
+                                                                question:quiz.question,
                                                                  multipleChoise: quiz.multipleChoise,
                                                                   answer: quiz.answer}, {new: true})
-            res.status(200).json(updatedQuiz)
+            res.status(200).json({msg:`Quiz ${updatedQuiz.quizTittle} has been updated`})
         }catch(error){
             console.log(error)
             res.status(500).json({error:"Server Error"})
     }  
+})
+
+//DELETE QUIZ
+app.delete("/deleteQuiz/:id", async (req, res)=>{
+    try{
+        const _id = req.params.id
+        const deletedQuiz = await Quiz.findByIdAndDelete(_id)
+            res.status(200).json({msg:`Quiz ${deletedQuiz.quizTittle} has been deleted`})
+    }catch(error){
+        console.log(error)
+            res.status(500).json({error:"Server Error"})
+    }
 })
 
 

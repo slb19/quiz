@@ -21,3 +21,10 @@
 .admin-quiz-tittle:hover{
     color:grey
 }
+
+.btn-small{
+    margin-left:12px;
+    padding:0 6px;
+    height:30px;
+
+}
