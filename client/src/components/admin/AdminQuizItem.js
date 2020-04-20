@@ -37,6 +37,7 @@ const AdminQuizItem = ({choosedQuiz, setChoosedQuiz, getAllQuizAdmin, allQuizAdm
 
     const sendUpdateToServer = () =>{
         setEditQuizTittleOrQuestion(false)
+       
         fetch(`http://localhost:5000/updateQuiz/${choosedQuiz._id}`,{
             method:"PUT",
             body: JSON.stringify(choosedQuiz),
@@ -76,6 +77,7 @@ const AdminQuizItem = ({choosedQuiz, setChoosedQuiz, getAllQuizAdmin, allQuizAdm
                 console.log(data)
                 setChoosedQuiz(data)
                 setEditQuizTittleOrQuestion(false)
+                
             }).catch(error=>{
                 console.log(error)
             })        
@@ -84,7 +86,7 @@ const AdminQuizItem = ({choosedQuiz, setChoosedQuiz, getAllQuizAdmin, allQuizAdm
     return (
         <div>
             {updateDb.updatedDb && <p>{updateDb.msg}</p>}
-           { showQuizQuestion.isOn ? <AdminQuizQuestion choosedQuiz={choosedQuiz} showQuizQuestion={showQuizQuestion} setShowQuizQuestion={setShowQuizQuestion} />
+           { showQuizQuestion.isOn ? <AdminQuizQuestion choosedQuiz={choosedQuiz} setChoosedQuiz={setChoosedQuiz} showQuizQuestion={showQuizQuestion} setShowQuizQuestion={setShowQuizQuestion} sendUpdateToServer={sendUpdateToServer} cancelUpdate={cancelUpdate}/>
                     :
                 <>       
                     <h4>Quiz tittle</h4>
@@ -97,7 +99,7 @@ const AdminQuizItem = ({choosedQuiz, setChoosedQuiz, getAllQuizAdmin, allQuizAdm
                         </div>
                         
                     <h5>Questions
-                        <button className="waves-effect waves-light teal accent-4-4 btn-small" onClick={()=>{ setAddNewQuestion(true)}}>+</button>
+                       {!editQuizTittleOrQuestion && <button className="waves-effect waves-light teal accent-4-4 btn-small" onClick={()=>{ setAddNewQuestion(true)}}>+</button>}
                         </h5>  
                              {choosedQuiz.question.map((question, i)=>{
                                 return <div key={i}>

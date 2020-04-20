@@ -1,8 +1,32 @@
-import React from 'react'
+import React,{useState} from 'react'
 
-const AdminQuizQuestion = ({choosedQuiz, showQuizQuestion, setShowQuizQuestion}) => {
+const AdminQuizQuestion = ({choosedQuiz, setChoosedQuiz, showQuizQuestion, setShowQuizQuestion, sendUpdateToServer, cancelUpdate}) => {
+
+    const[editQuestionMultipleChoise, setEditQuestionMultipleChoise] = useState(false)
 
     const{index} = showQuizQuestion
+
+    const updateQuestionMultipleChoise =(e,i)=>{
+        const choosedQuizCopy = choosedQuiz
+        if(e.target.name === "multipleChoise"){
+            choosedQuizCopy.multipleChoise[index].choises[i] = e.target.value
+            setChoosedQuiz({...choosedQuiz, multipleChoise:choosedQuizCopy.multipleChoise})
+        }     
+        if(e.target.name === "answer"){
+            choosedQuizCopy.answer[index] = e.target.value
+            setChoosedQuiz({...choosedQuiz, answer:choosedQuizCopy.answer})
+        }
+    }
+
+    const sendUpdateToServerMultipleChoise = ()=>{
+        setEditQuestionMultipleChoise(false)
+        sendUpdateToServer()
+    }
+
+    const cancelUpdateMultipleChoise= ()=>{
+        setEditQuestionMultipleChoise(false)
+        cancelUpdate()
+    }
 
     return (
         <div>
@@ -13,14 +37,34 @@ const AdminQuizQuestion = ({choosedQuiz, showQuizQuestion, setShowQuizQuestion})
                     <ul style={{marginLeft:"30px"}}>
                         {
                          choosedQuiz.multipleChoise[index].choises.map((ch, i)=>{
-                            return <li key={ i }>{ ch }</li>
+                            return <div key={ i }>
+                                {!editQuestionMultipleChoise ?
+                                        <li >{i+1}. { ch }</li>
+                                            :
+                                        <input type="text" name="multipleChoise" value={ch} onChange={(e)=>updateQuestionMultipleChoise(e,i)} style={{marginLeft:"30px"}}/>
+                                }
+                                   </div>
                          })
                         }
                     </ul>
                         <h5>Answer</h5>
-                            <p style={{marginLeft:"30px"}}>{choosedQuiz.answer[index]}</p>
+                            { !editQuestionMultipleChoise ?
+                                <p style={{marginLeft:"30px"}}>{choosedQuiz.answer[index]}</p>
+                                    :
+                                    <input type="text" name="answer" value={choosedQuiz.answer[index]} onChange={(e)=>updateQuestionMultipleChoise(e)}/>
+                            }
                    </div>
-                <button onClick={()=>{setShowQuizQuestion({ isOn:false, index:null })}}>Back to quiz tittle</button>
+                    { !editQuestionMultipleChoise ?
+                    <>
+                    <button onClick={()=>{setShowQuizQuestion({ isOn:false, index:null })}}>Back to quiz tittle</button>
+                    <button className="waves-effect waves-light light-blue accent-2 btn-small" onClick={()=>setEditQuestionMultipleChoise(true)}>Edit</button>
+                    </>
+                            :
+                        <>
+                        <button className="waves-effect waves-light light-blue accent-2 btn-small" onClick={sendUpdateToServerMultipleChoise}>Submit</button>
+                        <button className="waves-effect waves-light pink darken-1 btn-small" onClick={cancelUpdateMultipleChoise}>Cancel</button>
+                        </>
+                    }
         </div>
     )
 }
