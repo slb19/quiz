@@ -44,7 +44,7 @@ const AdminQuizItem = ({choosedQuiz, setChoosedQuiz, getAllQuizAdmin, allQuizAdm
             headers:{
              Accept:"Application/json",
              "Content-Type":"Application/json",
-             //"x-auth-token":localStorage.getItem("token")
+             "x-auth-token":localStorage.getItem("token")
             }
         }).then(res=>{
             return res.json()
@@ -63,13 +63,13 @@ const AdminQuizItem = ({choosedQuiz, setChoosedQuiz, getAllQuizAdmin, allQuizAdm
          
          const _id = choosedQuiz._id
          console.log(_id)
-        //TO DO API CALL TO FETCH NON UPDATED QUIZ FROM DB
+        //API CALL TO FETCH NON UPDATED QUIZ FROM DB
             fetch(`http://localhost:5000/getQuiz/admin/${_id}`, {
                 method:"GET",
                 headers:{
                  Accept:"Application/json",
                  "Content-Type":"Application/json",
-                 //"x-auth-token":localStorage.getItem("token")
+                 "x-auth-token":localStorage.getItem("token")
                 }
             }).then(res=>{
                 return res.json()

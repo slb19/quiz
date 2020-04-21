@@ -61,7 +61,7 @@ const AdminAddNewQuestion = ({setAddNewQuestion, choosedQuiz, setChoosedQuiz, se
                 headers:{
                 Accept:"Application/json",
                 "Content-Type":"Application/json",
-                //"x-auth-token":localStorage.getItem("token")
+                "x-auth-token":localStorage.getItem("token")
                }
              }).then(res=>{
                  return res.json()

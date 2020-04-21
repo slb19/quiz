@@ -1,8 +1,10 @@
 import React,{useState} from 'react'
+import AdminAddNewMultipleChoise from './AdminAddNewMultipleChoise.js'
 
 const AdminQuizQuestion = ({choosedQuiz, setChoosedQuiz, showQuizQuestion, setShowQuizQuestion, sendUpdateToServer, cancelUpdate}) => {
 
     const[editQuestionMultipleChoise, setEditQuestionMultipleChoise] = useState(false)
+    const[addNewMultipleChoise, setAddNewMultipleChoise] = useState(false)
 
     const{index} = showQuizQuestion
 
@@ -33,10 +35,12 @@ const AdminQuizQuestion = ({choosedQuiz, setChoosedQuiz, showQuizQuestion, setSh
              <h5>Question</h5>
                 <p style={{marginLeft:"30px"}} >{choosedQuiz.question[index]}</p>
                    <div style={{marginLeft:"60px"}}>
-                    <h5>Multiple choise</h5>
+                    <h5>Multiple choise
+                    {!editQuestionMultipleChoise && <button className="waves-effect waves-light teal accent-4-4 btn-small" onClick={()=>{ setAddNewMultipleChoise(true)}}>+</button>}
+                    </h5>
+                        
                     <ul style={{marginLeft:"30px"}}>
-                        {
-                         choosedQuiz.multipleChoise[index].choises.map((ch, i)=>{
+                        { choosedQuiz.multipleChoise[index].choises.map((ch, i)=>{
                             return <div key={ i }>
                                 {!editQuestionMultipleChoise ?
                                         <li >{i+1}. { ch }</li>
@@ -47,6 +51,7 @@ const AdminQuizQuestion = ({choosedQuiz, setChoosedQuiz, showQuizQuestion, setSh
                          })
                         }
                     </ul>
+                    {addNewMultipleChoise && <AdminAddNewMultipleChoise choosedQuiz={choosedQuiz} setChoosedQuiz={setChoosedQuiz} setAddNewMultipleChoise={setAddNewMultipleChoise} sendUpdateToServer={sendUpdateToServer} cancelUpdate={cancelUpdate} index={index}/>}
                         <h5>Answer</h5>
                             { !editQuestionMultipleChoise ?
                                 <p style={{marginLeft:"30px"}}>{choosedQuiz.answer[index]}</p>

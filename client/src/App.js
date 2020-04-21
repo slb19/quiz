@@ -36,10 +36,10 @@ function App() {
               <Route exact path="/choose-quiz" component={ChooseQuiz}/>
               {/*<Route exact path="/play-quiz/:quiz_id" component={QuizPage}/>*/}
               <Route exact path="/admin" component={Login} />
-              <Route exact path="/admin-dashboard" component={AdminDashboard} />
-             {/* <Route exact path="/admin-dashboard">
+              {/*<Route exact path="/admin-dashboard" component={AdminDashboard} />*/}
+              <Route exact path="/admin-dashboard">
                 {!auth || !token ? <Redirect to="/admin" /> : <AdminDashboard />}
-              </Route>*/}
+              </Route>
               <Route component={NotFoundPage} />
             
           </Switch>
@@ -50,8 +50,4 @@ function App() {
 }
 
 export default App;
-/*
-<Route exact path="/admin-dashboard">
-{!auth || !token ? <Redirect to="/admin" /> : <AdminDashboard />}
-</Route>
-*/
+
